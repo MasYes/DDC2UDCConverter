@@ -19,27 +19,30 @@ public class Converter {
 	private final String DDCNotExist = "Данного номера ДКД нет";
 	private final String oo = "00";
 	private final String o = "0";
+	private String line;
 
+	private String getDDCFromLine(){
+		return line.split("-")[0];
+	}
 
-
-
+	private String getUDCFromLine(){
+		return line.split("-")[1];
+	}
 
 	public Converter() throws Exception{
 		Scanner scan = new Scanner(new FileInputStream("D2U.txt"));
 		while(scan.hasNext()){
-			analyzeLine(scan.nextLine());
+			line = scan.nextLine();
+			analyzeLine();
 		}
 	}
 
-
-
-
-	private void analyzeLine(String line){
-		DDC2UDC.put(line.split("-")[0].trim(), new ArrayList<String>());
-		if(line.split("-")[1].contains("null")){
-			DDC2UDC.get(line.split("-")[0].trim()).add(DDCNotExist);
+	private void analyzeLine(){
+		DDC2UDC.put(getDDCFromLine(), new ArrayList<String>());
+		if(getUDCFromLine().contains("null")){
+			DDC2UDC.get(getDDCFromLine()).add(DDCNotExist);
 		}else{
-			add2HashMaps(line.split("-")[0].trim(), line.split("-")[1]);
+			add2HashMaps(getDDCFromLine(), getUDCFromLine());
 		}
 	}
 
@@ -50,9 +53,6 @@ public class Converter {
 		}
 	}
 
-
-
-
 	private void add2ArrayList(String ddc, String udc){
 		if(udc.equals("none")){
 			DDC2UDC.get(ddc).addAll(DDC2UDC.get(parentDDC(ddc)));
@@ -62,20 +62,12 @@ public class Converter {
 		}
 	}
 
-
-
-
-
 	private void add2ddc(String ddc, String udc){
 		DDC2UDC.get(ddc).add(udc);
 		if(!UDC2DDC.containsKey(udc))
 			UDC2DDC.put(udc, new ArrayList<String>());
 		UDC2DDC.get(udc).add(ddc);
 	}
-
-
-
-
 
 	public String DDC2UDC(String ddc){
 		if(DDC2UDC.containsKey(ddc))
@@ -84,20 +76,13 @@ public class Converter {
 			return notDDC2UDC;
 	}
 
-
-
-
-
 	public String UDC2DDC(String udc){
 		if(udc.equals(""))
 			return notUDC2DDC;
 		if(UDC2DDC.containsKey(udc))
 			return U2D2String(udc);
-		return UDC2DDC(udc.substring(0, udc.length() - 1));
+		return UDC2DDC(parentUDC(udc));
 	}
-
-
-
 
 	private String parentDDC(String ddc){
 		if(ddc.endsWith("0")){
@@ -108,8 +93,9 @@ public class Converter {
 		}
 	}
 
-
-
+	private String parentUDC(String udc){
+		return udc.substring(0, udc.length() - 1);
+	}
 
 	private String D2U2String(String key){
 		String res = "";
@@ -118,14 +104,10 @@ public class Converter {
 		return res;
 	}
 
-
-
-
 	private String U2D2String(String key){
 		String res = "";
 		for(String str : DDC2UDC.get(key))
 			res += str + " ";
 		return res;
 	}
-
 }
