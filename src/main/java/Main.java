@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 public class Main {
-	public static void main(String args[]){
+	public static void main(String args[]) throws Exception{
 		Converter conv = new Converter();
 		System.out.println(conv.UDC2DDC("316.454.5"));
 	}
